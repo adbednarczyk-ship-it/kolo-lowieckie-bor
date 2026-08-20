@@ -5,9 +5,16 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { logout } from "@/app/logowanie/actions";
 import { club, navItems } from "@/data/content";
+import { type UserRole } from "@/types/auth";
 import { Logo } from "./Logo";
 
-export function Header({ userEmail }: { userEmail?: string | null }) {
+export function Header({
+  userEmail,
+  userRole,
+}: {
+  userEmail?: string | null;
+  userRole?: UserRole | null;
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -62,6 +69,14 @@ export function Header({ userEmail }: { userEmail?: string | null }) {
         <div className="hidden items-center gap-3 lg:flex">
           {userEmail ? (
             <>
+              {userRole === "admin" ? (
+                <Link
+                  href="/admin"
+                  className="text-[12px] tracking-[0.16em] text-gold uppercase transition hover:text-gold-light"
+                >
+                  Panel
+                </Link>
+              ) : null}
               <Link
                 href="/konto"
                 className="text-[12px] tracking-[0.16em] text-cream-muted uppercase transition hover:text-gold"
@@ -144,6 +159,15 @@ export function Header({ userEmail }: { userEmail?: string | null }) {
               ))}
               {userEmail ? (
                 <>
+                  {userRole === "admin" ? (
+                    <Link
+                      href="/admin"
+                      onClick={() => setOpen(false)}
+                      className="font-serif text-4xl text-gold"
+                    >
+                      Panel
+                    </Link>
+                  ) : null}
                   <Link
                     href="/konto"
                     onClick={() => setOpen(false)}

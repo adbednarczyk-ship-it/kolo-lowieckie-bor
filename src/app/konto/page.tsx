@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { logout } from "@/app/logowanie/actions";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
-import { createServerSupabaseClient, getSessionUser } from "@/lib/supabase/server";
-import { roleLabels, type Profile } from "@/types/auth";
+import { getSessionProfile } from "@/lib/supabase/profile";
+import { roleLabels } from "@/types/auth";
 
 export const metadata: Metadata = {
   title: "Konto",
@@ -11,20 +11,8 @@ export const metadata: Metadata = {
 };
 
 export default async function AccountPage() {
-  const user = await getSessionUser();
+  const { user, profile } = await getSessionProfile();
   if (!user) redirect("/logowanie?next=/konto");
-
-  let profile: Profile | null = null;
-
-  if (isSupabaseConfigured()) {
-    const supabase = await createServerSupabaseClient();
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, email, full_name, role, created_at, updated_at")
-      .eq("id", user.id)
-      .maybeSingle();
-    profile = data as Profile | null;
-  }
 
   return (
     <main id="tresc" className="bg-charcoal pt-28 pb-24">
@@ -36,9 +24,16 @@ export default async function AccountPage() {
           Twoje konto
         </h1>
         <p className="mt-4 text-cream-muted">
-          Jesteś zalogowany. Księga polowań, wiadomości i panel administratora
-          pojawią się w kolejnych krokach.
+          Jesteś zalogowany w strefie koła.
         </p>
+        {profile?.role === "admin" ? (
+          <Link
+            href="/admin"
+            className="mt-6 inline-flex rounded-full bg-gold px-6 py-3 text-sm tracking-[0.16em] text-charcoal uppercase"
+          >
+            Panel administratora
+          </Link>
+        ) : null}
 
         <div className="mt-10 space-y-4 border border-cream/10 bg-white/[0.02] p-6">
           <p>
