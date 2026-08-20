@@ -40,6 +40,7 @@ Otwórz [http://localhost:3000](http://localhost:3000).
 | `npm run build`| produkcyjny build             |
 | `npm run start`| uruchomienie buildu           |
 | `npm run lint` | ESLint                        |
+| `npm run publish:site` | pierwsze publikowanie (GitHub + Vercel) |
 
 ## Personalizacja
 
@@ -51,7 +52,50 @@ Najłatwiej zmienić nazwę koła, adres i treści w jednym miejscu:
 
 Po podpięciu poczty w `src/app/api/contact/route.ts` formularz może wysyłać wiadomości (Resend, Nodemailer, webhook). Domyślnie zgłoszenia są walidowane i logowane po stronie serwera.
 
-## Wdrożenie na GitHub i Vercel
+## Automatyzacja wdrożenia
+
+Są dwa poziomy. **Logowanie jest tylko raz.** Potem publikacja to zwykły `git push`.
+
+### A. Pierwszy raz — jeden skrypt
+
+W PowerShell, w katalogu projektu:
+
+```powershell
+npm run publish:site
+```
+
+Skrypt:
+
+1. doinstaluje GitHub CLI, jeśli go nie ma
+2. zaloguje Cię do GitHub (przeglądarka)
+3. utworzy prywatne repo `kolo-lowieckie-bor` i wypchnie `main`
+4. zaloguje do Vercel i wdroży produkcję
+
+Publiczne repo: `$env:GITHUB_REPO_PRIVATE="false"; npm run publish:site`
+
+### B. Na co dzień — push = nowa wersja strony
+
+Najwygodniej **raz** spiąć repo z Vercel przez GitHub (to daje też podgląd pull requestów):
+
+1. [vercel.com/new](https://vercel.com/new) → import `kolo-lowieckie-bor`
+2. zmienna `NEXT_PUBLIC_SITE_URL` = adres produkcji
+3. Deploy
+
+Od tej pory:
+
+```powershell
+git add .
+git commit -m "Aktualizacja kalendarza polowań"
+git push
+```
+
+Vercel sam buduje i wdraża `main`. Pull request dostaje osobny adres podglądu.
+
+CI (lint + build) odpala się automatycznie w GitHub Actions: `.github/workflows/ci.yml`.
+
+### Ręcznie, krok po kroku
+
+Jeśli wolisz klikać bez skryptu:
 
 ### 1. Utwórz repozytorium na GitHub
 
