@@ -1,8 +1,13 @@
--- Krok 1: wklej całość w Supabase → SQL Editor → Run
+-- Bezpieczne do wielokrotnego uruchomienia.
+-- Supabase → SQL Editor → wklej całość → Run
 
-create type public.user_role as enum ('admin', 'board', 'member');
+do $$ begin
+  create type public.user_role as enum ('admin', 'board', 'member');
+exception
+  when duplicate_object then null;
+end $$;
 
-create table public.profiles (
+create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   email text not null,
   full_name text not null default '',
@@ -34,7 +39,8 @@ begin
     coalesce(new.email, ''),
     coalesce(new.raw_user_meta_data ->> 'full_name', ''),
     coalesce((new.raw_user_meta_data ->> 'role')::public.user_role, 'member')
-  );
+  )
+  on conflict (id) do nothing;
   return new;
 end;
 $$;
@@ -46,16 +52,19 @@ create trigger on_auth_user_created
 
 alter table public.profiles enable row level security;
 
+drop policy if exists "profiles_select_own" on public.profiles;
 create policy "profiles_select_own"
   on public.profiles for select
   to authenticated
   using (auth.uid() = id);
 
+drop policy if exists "profiles_select_admin" on public.profiles;
 create policy "profiles_select_admin"
   on public.profiles for select
   to authenticated
   using (public.current_user_role() = 'admin');
 
+drop policy if exists "profiles_update_admin" on public.profiles;
 create policy "profiles_update_admin"
   on public.profiles for update
   to authenticated
