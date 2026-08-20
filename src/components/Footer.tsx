@@ -80,7 +80,7 @@ export function Footer() {
           <p>
             © {year} {club.name}. Wszelkie prawa zastrzeżone.
           </p>
-          <p>Projekt gotowy do wdrożenia · Next.js + Vercel</p>
+          <p>Członek Polskiego Związku Łowieckiego</p>
         </div>
       </div>
     </footer>
