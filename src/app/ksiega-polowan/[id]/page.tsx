@@ -1,67 +1,67 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cancelReservation, deleteHunt, reserveStand } from "../actions";
+import {
+  monthCells,
+  monthLabels,
+  parseMonthParam,
+  shiftMonth,
+  todayKey,
+  weekdayLabels,
+} from "@/lib/calendar";
 import { formatDate } from "@/lib/site";
-import { isStaff, requireClubMember } from "@/lib/supabase/profile";
+import { requireClubMember } from "@/lib/supabase/profile";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { type Hunt, type Reservation, type Stand } from "@/types/hunts";
+import { type GroundReservation, type HuntingGround } from "@/types/grounds";
 
 export const metadata: Metadata = {
-  title: "Polowanie",
+  title: "Kalendarz łowiska",
   robots: { index: false, follow: false },
 };
 
 type PageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ miesiac?: string }>;
 };
 
-export default async function HuntDetailPage({ params }: PageProps) {
+export default async function GroundCalendarPage({
+  params,
+  searchParams,
+}: PageProps) {
   const { id } = await params;
-  const { user, profile } = await requireClubMember(`/ksiega-polowan/${id}`);
-  const supabase = await createServerSupabaseClient();
+  const query = await searchParams;
+  await requireClubMember(`/ksiega-polowan/${id}`);
 
-  const { data: hunt } = await supabase
-    .from("hunts")
-    .select("id, title, hunt_date, meeting_time, location, notes, created_by, created_at")
+  const { year, month } = parseMonthParam(query.miesiac);
+  const previous = shiftMonth(year, month, -1);
+  const next = shiftMonth(year, month, 1);
+  const from = `${year}-${String(month).padStart(2, "0")}-01`;
+  const to = shiftMonth(year, month, 1).param + "-01";
+
+  const supabase = await createServerSupabaseClient();
+  const { data: ground } = await supabase
+    .from("hunting_grounds")
+    .select("id, name, description, location, sort_order, created_at")
     .eq("id", id)
     .maybeSingle();
 
-  if (!hunt) notFound();
-  const details = hunt as Hunt;
+  if (!ground) notFound();
+  const details = ground as HuntingGround;
 
-  const [{ data: standsData }, { data: reservationsData }] = await Promise.all([
-    supabase
-      .from("stands")
-      .select("id, hunt_id, name, sort_order")
-      .eq("hunt_id", id)
-      .order("sort_order"),
-    supabase
-      .from("reservations")
-      .select("id, hunt_id, stand_id, user_id, created_at")
-      .eq("hunt_id", id),
-  ]);
+  const { data: bookings } = await supabase
+    .from("ground_reservations")
+    .select("id, ground_id, user_id, reserved_on, starts_at, ends_at, created_at")
+    .eq("ground_id", id)
+    .gte("reserved_on", from)
+    .lt("reserved_on", to);
 
-  const stands = (standsData as Stand[] | null) ?? [];
-  const reservations = (reservationsData as Reservation[] | null) ?? [];
-  const userIds = [...new Set(reservations.map((item) => item.user_id))];
-
-  const { data: people } = userIds.length
-    ? await supabase.from("profiles").select("id, full_name, email").in("id", userIds)
-    : { data: [] };
-
-  const names = new Map(
-    ((people as { id: string; full_name: string; email: string }[] | null) ?? []).map(
-      (person) => [person.id, person.full_name || person.email],
+  const busyDays = new Set(
+    ((bookings as GroundReservation[] | null) ?? []).map(
+      (item) => item.reserved_on,
     ),
   );
-
-  const reservationByStand = new Map(
-    reservations.map((item) => [item.stand_id, item]),
-  );
-  const myReservation = reservations.find((item) => item.user_id === user.id);
-  const open = details.hunt_date >= new Date().toISOString().slice(0, 10);
-  const staff = isStaff(profile?.role);
+  const today = todayKey();
+  const cells = monthCells(year, month);
 
   return (
     <main id="tresc" className="bg-charcoal pt-28 pb-24">
@@ -70,90 +70,73 @@ export default async function HuntDetailPage({ params }: PageProps) {
           href="/ksiega-polowan"
           className="text-xs tracking-[0.2em] text-gold uppercase"
         >
-          ← Księga polowań
+          ← Łowiska
         </Link>
-        <p className="mt-8 text-gold">{formatDate(details.hunt_date)}</p>
-        <h1 className="mt-2 font-serif text-4xl text-cream sm:text-5xl">
-          {details.title}
+        <h1 className="mt-6 font-serif text-4xl text-cream sm:text-5xl">
+          {details.name}
         </h1>
-        <p className="mt-4 text-cream-muted">
-          {details.location || "Miejsce do uzupełnienia"}
-          {details.meeting_time ? ` · zbiórka ${details.meeting_time.slice(0, 5)}` : ""}
+        <p className="mt-3 text-cream-muted">
+          {details.location}
+          {details.description ? ` · ${details.description}` : ""}
         </p>
-        {details.notes ? (
-          <p className="mt-4 whitespace-pre-wrap text-cream-muted">{details.notes}</p>
-        ) : null}
-
-        <h2 className="mt-12 font-serif text-2xl text-cream">Stanowiska</h2>
-        <p className="mt-2 text-sm text-cream-muted">
-          Możesz zająć jedno stanowisko. Wolne rezerwujesz przyciskiem.
+        <p className="mt-6 text-sm text-cream-muted">
+          Kliknij dzień, żeby zobaczyć godziny i się zapisać.
         </p>
 
-        <ul className="mt-6 divide-y divide-cream/10 border-y border-cream/10">
-          {stands.map((stand) => {
-            const reservation = reservationByStand.get(stand.id);
-            const mine = reservation?.user_id === user.id;
-            const taken = Boolean(reservation);
+        <div className="mt-10 flex items-center justify-between">
+          <Link
+            href={`/ksiega-polowan/${id}?miesiac=${previous.param}`}
+            className="text-sm text-gold"
+          >
+            ← {monthLabels[previous.month - 1]}
+          </Link>
+          <p className="font-serif text-2xl text-cream capitalize">
+            {monthLabels[month - 1]} {year}
+          </p>
+          <Link
+            href={`/ksiega-polowan/${id}?miesiac=${next.param}`}
+            className="text-sm text-gold"
+          >
+            {monthLabels[next.month - 1]} →
+          </Link>
+        </div>
 
+        <div className="mt-6 grid grid-cols-7 gap-1 text-center text-[11px] tracking-[0.16em] text-cream-muted uppercase">
+          {weekdayLabels.map((label) => (
+            <div key={label} className="py-2">
+              {label}
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-1">
+          {cells.map((cell, index) => {
+            if (!cell.date) {
+              return <div key={`empty-${index}`} className="min-h-16" />;
+            }
+            const booked = busyDays.has(cell.date);
+            const isToday = cell.date === today;
+            const past = cell.date < today;
             return (
-              <li
-                key={stand.id}
-                className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between"
+              <Link
+                key={cell.date}
+                href={`/ksiega-polowan/${id}/${cell.date}`}
+                className={`flex min-h-16 flex-col items-center justify-center border text-sm transition hover:border-gold hover:text-gold ${
+                  isToday
+                    ? "border-gold text-gold"
+                    : "border-cream/10 text-cream"
+                } ${past ? "opacity-50" : ""}`}
               >
-                <div>
-                  <p className="font-serif text-xl text-cream">{stand.name}</p>
-                  <p className="mt-1 text-sm text-cream-muted">
-                    {mine
-                      ? "Twoja rezerwacja"
-                      : taken
-                        ? `Zajęte: ${names.get(reservation!.user_id) ?? "członek koła"}`
-                        : "Wolne"}
-                  </p>
-                </div>
-                {open && mine ? (
-                  <form action={cancelReservation}>
-                    <input type="hidden" name="hunt_id" value={id} />
-                    <input
-                      type="hidden"
-                      name="reservation_id"
-                      value={reservation!.id}
-                    />
-                    <button
-                      type="submit"
-                      className="rounded-full border border-cream/20 px-5 py-2 text-xs tracking-[0.16em] text-cream uppercase hover:border-gold hover:text-gold"
-                    >
-                      Zrezygnuj
-                    </button>
-                  </form>
+                <span className="font-serif text-lg">{cell.day}</span>
+                {booked ? (
+                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-gold" />
                 ) : null}
-                {open && !taken && !myReservation ? (
-                  <form action={reserveStand}>
-                    <input type="hidden" name="hunt_id" value={id} />
-                    <input type="hidden" name="stand_id" value={stand.id} />
-                    <button
-                      type="submit"
-                      className="rounded-full bg-gold px-5 py-2 text-xs tracking-[0.16em] text-charcoal uppercase hover:bg-gold-light"
-                    >
-                      Rezerwuj
-                    </button>
-                  </form>
-                ) : null}
-              </li>
+              </Link>
             );
           })}
-        </ul>
-
-        {staff ? (
-          <form action={deleteHunt} className="mt-12">
-            <input type="hidden" name="hunt_id" value={id} />
-            <button
-              type="submit"
-              className="text-sm text-cream-muted underline-offset-4 hover:text-red-300 hover:underline"
-            >
-              Usuń polowanie
-            </button>
-          </form>
-        ) : null}
+        </div>
+        <p className="mt-6 text-xs text-cream-muted">
+          Złota kropka oznacza dzień z rezerwacją. Dziś: {formatDate(today)}.
+        </p>
       </div>
     </main>
   );
