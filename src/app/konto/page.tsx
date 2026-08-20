@@ -33,6 +33,12 @@ export default async function AccountPage() {
           >
             Księga polowań
           </Link>
+          <Link
+            href="/wiadomosci"
+            className="inline-flex rounded-full border border-gold/40 px-6 py-3 text-sm tracking-[0.16em] text-gold uppercase"
+          >
+            Wiadomości
+          </Link>
           {profile?.role === "admin" ? (
             <Link
               href="/admin"

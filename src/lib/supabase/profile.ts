@@ -38,3 +38,9 @@ export async function requireClubMember(nextPath = "/ksiega-polowan") {
   if (!session.profile) redirect("/konto");
   return session;
 }
+
+export async function requireStaff(nextPath = "/wiadomosci/nowa") {
+  const session = await requireClubMember(nextPath);
+  if (!isStaff(session.profile?.role)) redirect("/wiadomosci");
+  return session;
+}

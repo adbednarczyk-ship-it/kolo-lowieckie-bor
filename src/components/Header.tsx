@@ -84,6 +84,12 @@ export function Header({
                 Księga
               </Link>
               <Link
+                href="/wiadomosci"
+                className="text-[12px] tracking-[0.16em] text-cream-muted uppercase transition hover:text-gold"
+              >
+                Wiadomości
+              </Link>
+              <Link
                 href="/konto"
                 className="text-[12px] tracking-[0.16em] text-cream-muted uppercase transition hover:text-gold"
               >
@@ -180,6 +186,13 @@ export function Header({
                     className="font-serif text-4xl text-cream"
                   >
                     Księga
+                  </Link>
+                  <Link
+                    href="/wiadomosci"
+                    onClick={() => setOpen(false)}
+                    className="font-serif text-4xl text-cream"
+                  >
+                    Wiadomości
                   </Link>
                   <Link
                     href="/konto"
