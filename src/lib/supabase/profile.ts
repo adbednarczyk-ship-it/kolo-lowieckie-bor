@@ -21,9 +21,20 @@ export async function getSessionProfile() {
   return { user, profile: (data as Profile | null) ?? null };
 }
 
+export function isStaff(role?: string | null) {
+  return role === "admin" || role === "board";
+}
+
 export async function requireAdmin() {
   const session = await getSessionProfile();
   if (!session.user) redirect("/logowanie?next=/admin");
   if (session.profile?.role !== "admin") redirect("/konto");
+  return session;
+}
+
+export async function requireClubMember(nextPath = "/ksiega-polowan") {
+  const session = await getSessionProfile();
+  if (!session.user) redirect(`/logowanie?next=${nextPath}`);
+  if (!session.profile) redirect("/konto");
   return session;
 }

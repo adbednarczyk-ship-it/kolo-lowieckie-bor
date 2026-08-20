@@ -78,6 +78,12 @@ export function Header({
                 </Link>
               ) : null}
               <Link
+                href="/ksiega-polowan"
+                className="text-[12px] tracking-[0.16em] text-cream-muted uppercase transition hover:text-gold"
+              >
+                Księga
+              </Link>
+              <Link
                 href="/konto"
                 className="text-[12px] tracking-[0.16em] text-cream-muted uppercase transition hover:text-gold"
               >
@@ -168,6 +174,13 @@ export function Header({
                       Panel
                     </Link>
                   ) : null}
+                  <Link
+                    href="/ksiega-polowan"
+                    onClick={() => setOpen(false)}
+                    className="font-serif text-4xl text-cream"
+                  >
+                    Księga
+                  </Link>
                   <Link
                     href="/konto"
                     onClick={() => setOpen(false)}

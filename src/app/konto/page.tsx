@@ -26,14 +26,22 @@ export default async function AccountPage() {
         <p className="mt-4 text-cream-muted">
           Jesteś zalogowany w strefie koła.
         </p>
-        {profile?.role === "admin" ? (
+        <div className="mt-6 flex flex-wrap gap-3">
           <Link
-            href="/admin"
-            className="mt-6 inline-flex rounded-full bg-gold px-6 py-3 text-sm tracking-[0.16em] text-charcoal uppercase"
+            href="/ksiega-polowan"
+            className="inline-flex rounded-full bg-gold px-6 py-3 text-sm tracking-[0.16em] text-charcoal uppercase"
           >
-            Panel administratora
+            Księga polowań
           </Link>
-        ) : null}
+          {profile?.role === "admin" ? (
+            <Link
+              href="/admin"
+              className="inline-flex rounded-full border border-gold/40 px-6 py-3 text-sm tracking-[0.16em] text-gold uppercase"
+            >
+              Panel administratora
+            </Link>
+          ) : null}
+        </div>
 
         <div className="mt-10 space-y-4 border border-cream/10 bg-white/[0.02] p-6">
           <p>
