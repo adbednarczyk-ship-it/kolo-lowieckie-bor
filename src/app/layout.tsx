@@ -4,6 +4,7 @@ import { club } from "@/data/content";
 import { siteUrl } from "@/lib/site";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { getSessionUser } from "@/lib/supabase/server";
 import "./globals.css";
 
 const inter = Inter({
@@ -80,11 +81,13 @@ const jsonLd = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getSessionUser();
+
   return (
     <html lang="pl">
       <body
@@ -100,7 +103,7 @@ export default function RootLayout({
         >
           Przejdź do treści
         </a>
-        <Header />
+        <Header userEmail={user?.email} />
         {children}
         <Footer />
       </body>

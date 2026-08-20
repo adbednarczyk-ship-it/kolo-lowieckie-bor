@@ -52,6 +52,32 @@ Najłatwiej zmienić nazwę koła, adres i treści w jednym miejscu:
 
 Po podpięciu poczty w `src/app/api/contact/route.ts` formularz może wysyłać wiadomości (Resend, Nodemailer, webhook). Domyślnie zgłoszenia są walidowane i logowane po stronie serwera.
 
+## Logowanie (Supabase)
+
+Konta zakłada tylko administrator. Publiczna rejestracja jest wyłączona.
+
+1. Utwórz projekt na [supabase.com](https://supabase.com) (plan Free).
+2. **SQL Editor** → wklej `supabase/schema.sql` → **Run**.
+3. **Authentication → Providers → Email** → wyłącz *Allow new users to sign up*.
+4. **Authentication → Users → Add user** → e-mail i hasło (pierwszy administrator).
+5. W SQL Editor:
+
+```sql
+update public.profiles set role = 'admin', full_name = 'Twoje Imię' where email = 'twoj@email.pl';
+```
+
+6. **Project Settings → API** skopiuj `Project URL` i `anon public`.
+7. Lokalnie: `copy .env.example .env.local` i wklej klucze.
+8. Na Vercel: **Settings → Environment Variables** — te same nazwy:
+
+| Name | Value |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://….supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | klucz `anon` `public` |
+| `SUPABASE_SERVICE_ROLE_KEY` | klucz `service_role` (tylko serwer) |
+
+Strony: `/logowanie` (formularz), `/konto` (po zalogowaniu). Trasy `/admin`, `/ksiega-polowan`, `/wiadomosci` wymagają sesji.
+
 ## Automatyzacja wdrożenia
 
 Są dwa poziomy. **Logowanie jest tylko raz.** Potem publikacja to zwykły `git push`.

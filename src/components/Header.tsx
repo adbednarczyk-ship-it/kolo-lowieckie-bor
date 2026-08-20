@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import { logout } from "@/app/logowanie/actions";
 import { club, navItems } from "@/data/content";
 import { Logo } from "./Logo";
 
-export function Header() {
+export function Header({ userEmail }: { userEmail?: string | null }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -58,12 +59,41 @@ export function Header() {
           ))}
         </nav>
 
-        <Link
-          href="/#kontakt"
-          className="hidden rounded-full border border-gold/40 bg-gold/10 px-5 py-2 text-[12px] tracking-[0.18em] text-gold uppercase transition hover:bg-gold hover:text-charcoal lg:inline-flex"
-        >
-          Dołącz do nas
-        </Link>
+        <div className="hidden items-center gap-3 lg:flex">
+          {userEmail ? (
+            <>
+              <Link
+                href="/konto"
+                className="text-[12px] tracking-[0.16em] text-cream-muted uppercase transition hover:text-gold"
+              >
+                Konto
+              </Link>
+              <form action={logout}>
+                <button
+                  type="submit"
+                  className="rounded-full border border-cream/20 px-5 py-2 text-[12px] tracking-[0.18em] text-cream uppercase transition hover:border-gold hover:text-gold"
+                >
+                  Wyloguj
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/logowanie"
+                className="rounded-full border border-gold/40 bg-gold/10 px-5 py-2 text-[12px] tracking-[0.18em] text-gold uppercase transition hover:bg-gold hover:text-charcoal"
+              >
+                Strefa koła
+              </Link>
+              <Link
+                href="/#kontakt"
+                className="rounded-full border border-cream/20 px-5 py-2 text-[12px] tracking-[0.18em] text-cream uppercase transition hover:border-gold hover:text-gold"
+              >
+                Dołącz do nas
+              </Link>
+            </>
+          )}
+        </div>
 
         <button
           type="button"
@@ -112,13 +142,42 @@ export function Header() {
                   </Link>
                 </motion.div>
               ))}
-              <Link
-                href="/#kontakt"
-                onClick={() => setOpen(false)}
-                className="mt-4 w-fit rounded-full bg-gold px-6 py-3 text-sm tracking-[0.18em] text-charcoal uppercase"
-              >
-                Dołącz do nas
-              </Link>
+              {userEmail ? (
+                <>
+                  <Link
+                    href="/konto"
+                    onClick={() => setOpen(false)}
+                    className="font-serif text-4xl text-cream"
+                  >
+                    Konto
+                  </Link>
+                  <form action={logout}>
+                    <button
+                      type="submit"
+                      className="mt-4 text-left font-serif text-3xl text-gold"
+                    >
+                      Wyloguj
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/logowanie"
+                    onClick={() => setOpen(false)}
+                    className="mt-4 w-fit rounded-full bg-gold px-6 py-3 text-sm tracking-[0.18em] text-charcoal uppercase"
+                  >
+                    Strefa koła
+                  </Link>
+                  <Link
+                    href="/#kontakt"
+                    onClick={() => setOpen(false)}
+                    className="w-fit text-sm tracking-[0.18em] text-cream-muted uppercase"
+                  >
+                    Dołącz do nas
+                  </Link>
+                </>
+              )}
             </nav>
           </motion.div>
         ) : null}

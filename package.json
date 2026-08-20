@@ -10,6 +10,8 @@
     "publish:site": "powershell -ExecutionPolicy Bypass -File scripts/publish.ps1"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.112.3",
     "framer-motion": "^13.1.0",
     "next": "15.5.23",
     "react": "19.1.0",
