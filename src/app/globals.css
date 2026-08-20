@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-forest: #0d1f14;
+  --color-forest-mid: #163324;
+  --color-forest-light: #1f4633;
+  --color-charcoal: #0b0c0b;
+  --color-charcoal-soft: #141614;
+  --color-gold: #c9a227;
+  --color-gold-light: #e0c56a;
+  --color-gold-dark: #8f7318;
+  --color-cream: #f3ead6;
+  --color-cream-muted: #cbbfa3;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), ui-serif, Georgia, "Times New Roman",
+    serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-charcoal);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-charcoal);
+}
+
+@utility noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+@utility gold-rule {
+  height: 1px;
+  width: 3rem;
+  background: linear-gradient(
+    90deg,
+    var(--color-gold),
+    color-mix(in srgb, var(--color-gold) 20%, transparent)
+  );
+}
