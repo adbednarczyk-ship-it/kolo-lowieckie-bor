@@ -32,11 +32,21 @@ export async function login(
     return { error: "Podaj e-mail i hasło." };
   }
 
-  const supabase = await createServerSupabaseClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  try {
+    const supabase = await createServerSupabaseClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (error) {
-    return { error: "Nieprawidłowy e-mail lub hasło." };
+    if (error) {
+      return { error: "Nieprawidłowy e-mail lub hasło." };
+    }
+  } catch {
+    return {
+      error:
+        "Nie udało się połączyć z logowaniem. Sprawdź adres Supabase (bez /rest/v1) i spróbuj ponownie.",
+    };
   }
 
   redirect(next);
