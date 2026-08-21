@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { board } from "@/data/content";
 import { FadeIn } from "./FadeIn";
 import { SectionHeading } from "./SectionHeading";
+import { type BoardMember } from "@/types/cms";
 
-export function Board() {
+export function Board({ members }: { members: BoardMember[] }) {
   return (
     <section
       id="zarzad"
@@ -20,17 +20,19 @@ export function Board() {
         </FadeIn>
 
         <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-          {board.map((member, index) => (
-            <FadeIn key={member.name} delay={0.06 * index}>
+          {members.map((member, index) => (
+            <FadeIn key={member.id} delay={0.06 * index}>
               <article className="group">
                 <div className="relative aspect-[3/4] overflow-hidden bg-charcoal-soft">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0"
-                  />
+                  {member.image_url ? (
+                    <Image
+                      src={member.image_url}
+                      alt={member.name}
+                      fill
+                      sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                    />
+                  ) : null}
                   <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-transparent to-transparent opacity-80" />
                   <div className="absolute inset-x-0 bottom-0 p-4">
                     <h3 className="font-serif text-lg text-cream">

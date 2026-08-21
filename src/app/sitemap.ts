@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
-import { news } from "@/data/content";
+import { getPublishedNews } from "@/lib/cms";
 import { siteUrl } from "@/lib/site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const news = await getPublishedNews();
   const articles = news.map((item) => ({
     url: `${siteUrl}/aktualnosci/${item.slug}`,
-    lastModified: new Date(item.date),
+    lastModified: new Date(item.published_on),
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));

@@ -4,6 +4,7 @@ import { club } from "@/data/content";
 import { siteUrl } from "@/lib/site";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { getSiteSettings } from "@/lib/cms";
 import { getSessionProfile } from "@/lib/supabase/profile";
 import "./globals.css";
 
@@ -86,7 +87,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { user, profile } = await getSessionProfile();
+  const [{ user, profile }, settings] = await Promise.all([
+    getSessionProfile(),
+    getSiteSettings(),
+  ]);
 
   return (
     <html lang="pl">
@@ -105,7 +109,7 @@ export default async function RootLayout({
         </a>
         <Header userEmail={user?.email} userRole={profile?.role} />
         {children}
-        <Footer />
+        <Footer settings={settings} />
       </body>
     </html>
   );

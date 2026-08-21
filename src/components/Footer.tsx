@@ -1,9 +1,12 @@
 import Link from "next/link";
-import { club, navItems } from "@/data/content";
+import { navItems } from "@/data/content";
+import { settingsToClub } from "@/lib/club";
+import { type SiteSettings } from "@/types/cms";
 import { Logo } from "./Logo";
 
-export function Footer() {
+export function Footer({ settings }: { settings: SiteSettings }) {
   const year = new Date().getFullYear();
+  const club = settingsToClub(settings);
 
   return (
     <footer className="border-t border-cream/10 bg-charcoal">

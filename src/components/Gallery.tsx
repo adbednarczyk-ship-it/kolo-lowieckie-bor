@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { gallery } from "@/data/content";
 import { FadeIn } from "./FadeIn";
 import { SectionHeading } from "./SectionHeading";
+import { type GalleryItem } from "@/types/cms";
 
-export function Gallery() {
+export function Gallery({ items }: { items: GalleryItem[] }) {
   const [active, setActive] = useState<number | null>(null);
 
   const close = useCallback(() => setActive(null), []);
@@ -16,16 +16,16 @@ export function Gallery() {
       setActive((current) =>
         current === null
           ? current
-          : (current + gallery.length - 1) % gallery.length,
+          : (current + items.length - 1) % items.length,
       ),
-    [],
+    [items.length],
   );
   const next = useCallback(
     () =>
       setActive((current) =>
-        current === null ? current : (current + 1) % gallery.length,
+        current === null ? current : (current + 1) % items.length,
       ),
-    [],
+    [items.length],
   );
 
   useEffect(() => {
@@ -59,9 +59,9 @@ export function Gallery() {
         </FadeIn>
 
         <div className="mt-16 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-          {gallery.map((item, index) => (
+          {items.map((item, index) => (
             <FadeIn
-              key={item.src}
+              key={item.id}
               delay={0.04 * index}
               className={
                 item.span === "wide"
@@ -78,7 +78,7 @@ export function Gallery() {
                 aria-label={`Otwórz zdjęcie: ${item.caption}`}
               >
                 <Image
-                  src={item.src}
+                  src={item.image_url}
                   alt={item.alt}
                   fill
                   sizes="(min-width: 768px) 50vw, 100vw"
@@ -125,7 +125,7 @@ export function Gallery() {
               ←
             </button>
             <motion.div
-              key={gallery[active].src}
+              key={items[active].image_url}
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}
@@ -134,14 +134,14 @@ export function Gallery() {
               onClick={(event) => event.stopPropagation()}
             >
               <Image
-                src={gallery[active].src}
-                alt={gallery[active].alt}
+                src={items[active].image_url}
+                alt={items[active].alt}
                 fill
                 sizes="100vw"
                 className="object-contain"
               />
               <p className="absolute inset-x-0 -bottom-10 text-center font-serif text-cream">
-                {gallery[active].caption}
+                {items[active].caption}
               </p>
             </motion.div>
             <button

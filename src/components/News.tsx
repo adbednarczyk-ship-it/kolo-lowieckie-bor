@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { news } from "@/data/content";
 import { formatDate } from "@/lib/site";
 import { FadeIn } from "./FadeIn";
 import { SectionHeading } from "./SectionHeading";
+import { type NewsPost } from "@/types/cms";
 
-export function News() {
+export function News({ posts }: { posts: NewsPost[] }) {
   return (
     <section
       id="aktualnosci"
@@ -22,13 +22,13 @@ export function News() {
         </FadeIn>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
-          {news.map((item, index) => (
+          {posts.map((item, index) => (
             <FadeIn key={item.slug} delay={0.08 * index}>
               <article className="group flex h-full flex-col border border-cream/10 bg-white/[0.02] transition hover:border-gold/40">
                 <Link href={`/aktualnosci/${item.slug}`} className="block">
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <Image
-                      src={item.image}
+                      src={item.image_url}
                       alt={item.title}
                       fill
                       sizes="(min-width: 768px) 33vw, 100vw"
@@ -40,7 +40,7 @@ export function News() {
                   <div className="flex items-center gap-3 text-[11px] tracking-[0.2em] uppercase">
                     <span className="text-gold">{item.category}</span>
                     <span className="text-cream-muted">
-                      {formatDate(item.date)}
+                      {formatDate(item.published_on)}
                     </span>
                   </div>
                   <h3 className="mt-3 font-serif text-2xl leading-snug text-cream">

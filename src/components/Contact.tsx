@@ -1,7 +1,9 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { club, membershipSteps } from "@/data/content";
+import { membershipSteps } from "@/data/content";
+import { settingsToClub } from "@/lib/club";
+import { type SiteSettings } from "@/types/cms";
 import { FadeIn } from "./FadeIn";
 import { SectionHeading } from "./SectionHeading";
 
@@ -14,7 +16,8 @@ const topics = [
   { value: "inne", label: "Inna sprawa" },
 ] as const;
 
-export function Contact() {
+export function Contact({ settings }: { settings: SiteSettings }) {
+  const club = settingsToClub(settings);
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
 

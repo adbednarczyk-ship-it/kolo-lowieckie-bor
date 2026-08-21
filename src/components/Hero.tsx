@@ -3,9 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { club } from "@/data/content";
+import { type SiteSettings } from "@/types/cms";
 
-export function Hero() {
+export function Hero({ settings }: { settings: SiteSettings }) {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 700], [0, 180]);
   const opacity = useTransform(scrollY, [0, 500], [1, 0.35]);
@@ -20,7 +20,7 @@ export function Hero() {
           className="h-full w-full"
         >
           <Image
-            src="https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?auto=format&fit=crop&w=2400&q=80"
+            src={settings.hero_image}
             alt="Mglisty las o świcie — tereny Koła Łowieckiego Bór"
             fill
             priority
@@ -43,7 +43,7 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.15 }}
           className="mb-5 text-xs tracking-[0.35em] text-gold uppercase"
         >
-          Założone w {club.founded} · {club.pzl}
+          {settings.hero_eyebrow}
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 24 }}
@@ -51,7 +51,7 @@ export function Hero() {
           transition={{ duration: 0.9, delay: 0.28 }}
           className="max-w-4xl font-serif text-4xl leading-[1.08] text-cream sm:text-6xl lg:text-7xl"
         >
-          Las nas zobowiązuje.
+          {settings.hero_headline}
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 24 }}
@@ -59,8 +59,7 @@ export function Hero() {
           transition={{ duration: 0.9, delay: 0.42 }}
           className="mt-6 max-w-xl text-base leading-relaxed text-cream-muted sm:text-lg"
         >
-          {club.name} — gospodarka łowiecka, ochrona zwierzyny i wspólnota
-          myśliwych w sercu polskich ostępów.
+          {settings.hero_text}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 24 }}

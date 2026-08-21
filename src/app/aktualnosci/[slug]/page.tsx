@@ -2,22 +2,23 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { news, getNewsBySlug } from "@/data/content";
+import { getNewsBySlug, getPublishedNews } from "@/lib/cms";
 import { formatDate } from "@/lib/site";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return news.map((item) => ({ slug: item.slug }));
+export async function generateStaticParams() {
+  const posts = await getPublishedNews();
+  return posts.map((item) => ({ slug: item.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = getNewsBySlug(slug);
+  const article = await getNewsBySlug(slug);
   if (!article) return { title: "Nie znaleziono" };
 
   return {
@@ -27,15 +28,15 @@ export async function generateMetadata({
       title: article.title,
       description: article.excerpt,
       type: "article",
-      publishedTime: article.date,
-      images: [{ url: article.image }],
+      publishedTime: article.published_on,
+      images: [{ url: article.image_url }],
     },
   };
 }
 
 export default async function NewsArticlePage({ params }: PageProps) {
   const { slug } = await params;
-  const article = getNewsBySlug(slug);
+  const article = await getNewsBySlug(slug);
   if (!article) notFound();
 
   return (
@@ -48,7 +49,7 @@ export default async function NewsArticlePage({ params }: PageProps) {
           ← Aktualności
         </Link>
         <p className="mt-8 text-[11px] tracking-[0.22em] text-cream-muted uppercase">
-          {article.category} · {formatDate(article.date)}
+          {article.category} · {formatDate(article.published_on)}
         </p>
         <h1 className="mt-4 font-serif text-4xl leading-tight text-cream sm:text-5xl">
           {article.title}
@@ -58,7 +59,7 @@ export default async function NewsArticlePage({ params }: PageProps) {
         </p>
         <div className="relative mt-10 aspect-[16/9] overflow-hidden">
           <Image
-            src={article.image}
+            src={article.image_url}
             alt={article.title}
             fill
             priority
@@ -67,7 +68,7 @@ export default async function NewsArticlePage({ params }: PageProps) {
           />
         </div>
         <div className="mt-10 space-y-6 text-base leading-relaxed text-cream-muted">
-          {article.content.map((paragraph) => (
+          {article.body.split(/\n\s*\n/).map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
         </div>

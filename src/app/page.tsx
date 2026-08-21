@@ -5,17 +5,21 @@ import { Events } from "@/components/Events";
 import { Gallery } from "@/components/Gallery";
 import { Hero } from "@/components/Hero";
 import { News } from "@/components/News";
+import { getPublicContent } from "@/lib/cms";
 
-export default function Home() {
+export default async function Home() {
+  const { settings, boardMembers, galleryItems, newsPosts } =
+    await getPublicContent();
+
   return (
     <main id="tresc">
-      <Hero />
-      <About />
-      <Board />
+      <Hero settings={settings} />
+      <About settings={settings} />
+      <Board members={boardMembers} />
       <Events />
-      <Gallery />
-      <News />
-      <Contact />
+      <Gallery items={galleryItems} />
+      <News posts={newsPosts} />
+      <Contact settings={settings} />
     </main>
   );
 }

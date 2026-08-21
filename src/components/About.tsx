@@ -1,31 +1,20 @@
 import Image from "next/image";
-import { club } from "@/data/content";
 import { FadeIn } from "./FadeIn";
 import { SectionHeading } from "./SectionHeading";
+import { type SiteSettings } from "@/types/cms";
 
-const pillars = [
-  {
-    title: "Gospodarka",
-    text: "Prowadzimy zrównoważoną gospodarkę łowiecką na 8 400 ha obwodu — zimą dokarmiamy, przez cały rok chronimy ostoję.",
-  },
-  {
-    title: "Etyka",
-    text: "Łowiectwo to odpowiedzialność, nie widowisko. Polujemy zgodnie z prawem, kulturą i poszanowaniem zwierzyny.",
-  },
-  {
-    title: "Wspólnota",
-    text: "Koło to ludzie: myśliwi, rodziny, leśnicy i sąsiedzi. Hubertus, szkolenia i praca w terenie łączą pokolenia.",
-  },
-] as const;
-
-const stats = [
-  { value: String(club.founded), label: "Rok założenia" },
-  { value: "8 400 ha", label: "Obwód łowiecki" },
-  { value: String(club.members), label: "Członków koła" },
-  { value: "47", label: "Numer obwodu" },
-] as const;
-
-export function About() {
+export function About({ settings }: { settings: SiteSettings }) {
+  const pillars = [
+    { title: settings.pillar1_title, text: settings.pillar1_text },
+    { title: settings.pillar2_title, text: settings.pillar2_text },
+    { title: settings.pillar3_title, text: settings.pillar3_text },
+  ];
+  const stats = [
+    { value: settings.stat_founded, label: "Rok założenia" },
+    { value: settings.stat_area, label: "Obwód łowiecki" },
+    { value: settings.stat_members, label: "Członków koła" },
+    { value: settings.stat_plot, label: "Numer obwodu" },
+  ];
   return (
     <section id="o-nas" className="scroll-mt-24 bg-charcoal py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -33,8 +22,8 @@ export function About() {
           <SectionHeading
             index="01"
             eyebrow="O nas"
-            title="Historia wpisana w las."
-            description={`${club.name} powstało w ${club.founded} roku. Od początku łączymy tradycję polskiego łowiectwa z troską o zwierzynę, drzewostan i ciszę ostępów. Jesteśmy częścią ${club.pzl}.`}
+            title={settings.about_title}
+            description={settings.about_intro}
           />
         </FadeIn>
 
@@ -51,22 +40,17 @@ export function About() {
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 to-transparent" />
             </div>
             <p className="mt-4 font-serif text-sm italic text-cream-muted">
-              Obwód nr 47 · uroczyska Jawor, Smug i Bór
+              {settings.about_caption}
             </p>
           </FadeIn>
 
           <div className="lg:col-span-6">
             <FadeIn delay={0.1}>
               <p className="font-serif text-2xl leading-snug text-cream sm:text-3xl">
-                Nasza misja jest prosta: zostawić las w lepszym stanie, niż go
-                zastaliśmy.
+                {settings.about_mission}
               </p>
               <p className="mt-6 text-base leading-relaxed text-cream-muted">
-                Prowadzimy gospodarkę zgodnie z ustawą Prawo łowieckie i
-                planem zagospodarowania obwodu. Współpracujemy z Nadleśnictwem,
-                rolnikami i gminą. Edukujemy młodzież, dbamy o bezpieczeństwo
-                polowań i kultywujemy zwyczaje, które nie potrzebują krzykliwej
-                oprawy — wystarczy rzetelna praca.
+                {settings.about_body}
               </p>
             </FadeIn>
 
