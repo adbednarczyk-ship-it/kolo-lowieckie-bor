@@ -24,6 +24,7 @@ export const navItems = [
   { href: "/#galeria", label: "Galeria" },
   { href: "/#aktualnosci", label: "Aktualności" },
   { href: "/#kontakt", label: "Kontakt" },
+  { href: "/zglos-szkode", label: "Zgłoś szkodę" },
 ] as const;
 
 export const board = [

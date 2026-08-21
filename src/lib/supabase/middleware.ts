@@ -7,6 +7,7 @@ const protectedPrefixes = [
   "/admin",
   "/ksiega-polowan",
   "/wiadomosci",
+  "/szkody",
 ];
 
 export async function updateSession(request: NextRequest) {

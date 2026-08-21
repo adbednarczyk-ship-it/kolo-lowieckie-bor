@@ -79,6 +79,14 @@ export function Header({
                   Panel
                 </Link>
               ) : null}
+              {userRole === "admin" || userRole === "board" ? (
+                <Link
+                  href="/szkody"
+                  className="text-[12px] tracking-[0.16em] text-cream-muted uppercase transition hover:text-gold"
+                >
+                  Szkody
+                </Link>
+              ) : null}
               <Link
                 href="/ksiega-polowan"
                 className="text-[12px] tracking-[0.16em] text-cream-muted uppercase transition hover:text-gold"
@@ -180,6 +188,15 @@ export function Header({
                       className="font-serif text-4xl text-gold"
                     >
                       Panel
+                    </Link>
+                  ) : null}
+                  {userRole === "admin" || userRole === "board" ? (
+                    <Link
+                      href="/szkody"
+                      onClick={() => setOpen(false)}
+                      className="font-serif text-4xl text-cream"
+                    >
+                      Szkody
                     </Link>
                   ) : null}
                   <Link

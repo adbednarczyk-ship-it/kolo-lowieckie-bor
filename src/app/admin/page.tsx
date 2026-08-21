@@ -34,6 +34,11 @@ const cards = [
     title: "Użytkownicy",
     text: "Konta członków i role.",
   },
+  {
+    href: "/szkody",
+    title: "Szkody łowieckie",
+    text: "Zgłoszenia od rolników: status, szacujący, notatki.",
+  },
 ] as const;
 
 export default async function AdminHomePage() {
