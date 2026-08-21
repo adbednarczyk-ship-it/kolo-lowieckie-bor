@@ -8,7 +8,7 @@ import { News } from "@/components/News";
 import { getPublicContent } from "@/lib/cms";
 
 export default async function Home() {
-  const { settings, boardMembers, galleryItems, newsPosts } =
+  const { settings, boardMembers, galleryAlbums, newsPosts } =
     await getPublicContent();
 
   return (
@@ -17,7 +17,7 @@ export default async function Home() {
       <About settings={settings} />
       <Board members={boardMembers} />
       <Events />
-      <Gallery items={galleryItems} />
+      <Gallery albums={galleryAlbums} />
       <News posts={newsPosts} />
       <Contact settings={settings} />
     </main>

@@ -1,6 +1,7 @@
 import { club, board, gallery, news } from "@/data/content";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getGalleryAlbums } from "@/lib/gallery";
 import {
   type BoardMember,
   type GalleryItem,
@@ -138,11 +139,13 @@ export async function getNewsBySlug(slug: string) {
 }
 
 export async function getPublicContent() {
-  const [settings, boardMembers, galleryItems, newsPosts] = await Promise.all([
-    getSiteSettings(),
-    getBoardMembers(),
-    getGalleryItems(),
-    getPublishedNews(),
-  ]);
-  return { settings, boardMembers, galleryItems, newsPosts };
+  const [settings, boardMembers, galleryItems, newsPosts, galleryAlbums] =
+    await Promise.all([
+      getSiteSettings(),
+      getBoardMembers(),
+      getGalleryItems(),
+      getPublishedNews(),
+      getGalleryAlbums(),
+    ]);
+  return { settings, boardMembers, galleryItems, newsPosts, galleryAlbums };
 }

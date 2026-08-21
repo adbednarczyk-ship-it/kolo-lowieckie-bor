@@ -1,163 +1,58 @@
-"use client";
-
-import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 import { FadeIn } from "./FadeIn";
 import { SectionHeading } from "./SectionHeading";
-import { type GalleryItem } from "@/types/cms";
+import { type GalleryAlbumCard } from "@/types/gallery";
 
-export function Gallery({ items }: { items: GalleryItem[] }) {
-  const [active, setActive] = useState<number | null>(null);
-
-  const close = useCallback(() => setActive(null), []);
-  const prev = useCallback(
-    () =>
-      setActive((current) =>
-        current === null
-          ? current
-          : (current + items.length - 1) % items.length,
-      ),
-    [items.length],
-  );
-  const next = useCallback(
-    () =>
-      setActive((current) =>
-        current === null ? current : (current + 1) % items.length,
-      ),
-    [items.length],
-  );
-
-  useEffect(() => {
-    if (active === null) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
-      if (event.key === "ArrowLeft") prev();
-      if (event.key === "ArrowRight") next();
-    };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [active, close, next, prev]);
-
+export function Gallery({ albums }: { albums: GalleryAlbumCard[] }) {
   return (
-    <section
-      id="galeria"
-      className="scroll-mt-24 bg-charcoal py-24 sm:py-32"
-    >
+    <section id="galeria" className="scroll-mt-24 bg-charcoal py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <FadeIn>
           <SectionHeading
             index="04"
             eyebrow="Galeria"
             title="Ostępy, które strzeżemy."
-            description="Las, zwierzyna i światło — kadry z obwodu nr 47. Kliknij zdjęcie, aby otworzyć."
+            description="Zdjęcia pogrupowane według wydarzeń. Wejdź w album, żeby zobaczyć galerię."
           />
         </FadeIn>
 
-        <div className="mt-16 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-          {items.map((item, index) => (
-            <FadeIn
-              key={item.id}
-              delay={0.04 * index}
-              className={
-                item.span === "wide"
-                  ? "col-span-2"
-                  : item.span === "tall"
-                    ? "row-span-2"
-                    : ""
-              }
-            >
-              <button
-                type="button"
-                onClick={() => setActive(index)}
-                className="group relative block h-full min-h-[220px] w-full overflow-hidden md:min-h-[260px]"
-                aria-label={`Otwórz zdjęcie: ${item.caption}`}
-              >
-                <Image
-                  src={item.image_url}
-                  alt={item.alt}
-                  fill
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover transition duration-700 group-hover:scale-105"
-                />
-                <span className="absolute inset-0 bg-charcoal/0 transition group-hover:bg-charcoal/25" />
-                <span className="absolute inset-x-0 bottom-0 translate-y-2 p-4 text-left text-sm text-cream opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
-                  {item.caption}
-                </span>
-              </button>
-            </FadeIn>
-          ))}
-        </div>
+        {albums.length === 0 ? (
+          <p className="mt-16 text-cream-muted">
+            Albumy pojawią się, gdy administrator doda pierwsze wydarzenie.
+          </p>
+        ) : (
+          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {albums.map((album, index) => (
+              <FadeIn key={album.id} delay={0.06 * index}>
+                <Link href={`/galeria/${album.id}`} className="group block">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-charcoal-soft">
+                    {album.cover_image_url ? (
+                      <Image
+                        src={album.cover_image_url}
+                        alt={album.title}
+                        fill
+                        sizes="(min-width: 1024px) 33vw, 100vw"
+                        className="object-cover transition duration-700 group-hover:scale-105"
+                      />
+                    ) : null}
+                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-transparent to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-5">
+                      <h3 className="font-serif text-2xl text-cream group-hover:text-gold">
+                        {album.title}
+                      </h3>
+                      <p className="mt-1 text-sm text-cream-muted">
+                        {album.photo_count}{" "}
+                        {album.photo_count === 1 ? "zdjęcie" : "zdjęć"}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              </FadeIn>
+            ))}
+          </div>
+        )}
       </div>
-
-      <AnimatePresence>
-        {active !== null ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[80] flex items-center justify-center bg-charcoal/92 px-4 backdrop-blur-md"
-            onClick={close}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Podgląd zdjęcia"
-          >
-            <button
-              type="button"
-              onClick={close}
-              className="absolute top-6 right-6 text-sm tracking-[0.2em] text-cream uppercase"
-            >
-              Zamknij
-            </button>
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                prev();
-              }}
-              className="absolute left-4 text-cream md:left-8"
-              aria-label="Poprzednie zdjęcie"
-            >
-              ←
-            </button>
-            <motion.div
-              key={items[active].image_url}
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.35 }}
-              className="relative h-[72vh] w-full max-w-5xl"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <Image
-                src={items[active].image_url}
-                alt={items[active].alt}
-                fill
-                sizes="100vw"
-                className="object-contain"
-              />
-              <p className="absolute inset-x-0 -bottom-10 text-center font-serif text-cream">
-                {items[active].caption}
-              </p>
-            </motion.div>
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                next();
-              }}
-              className="absolute right-4 text-cream md:right-8"
-              aria-label="Następne zdjęcie"
-            >
-              →
-            </button>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
     </section>
   );
 }
