@@ -35,9 +35,11 @@ export function Header({
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled || open
-          ? "border-b border-cream/10 bg-charcoal/85 backdrop-blur-xl"
-          : "border-b border-transparent bg-transparent"
+        open
+          ? "border-b border-cream/10 bg-forest"
+          : scrolled
+            ? "border-b border-cream/10 bg-charcoal/85 backdrop-blur-xl"
+            : "border-b border-transparent bg-transparent"
       }`}
     >
       <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between px-5 sm:px-8">
@@ -150,7 +152,7 @@ export function Header({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-charcoal/95 backdrop-blur-xl lg:hidden"
+            className="fixed inset-0 z-40 bg-forest lg:hidden"
           >
             <nav className="flex h-full flex-col justify-center gap-6 px-8">
               {navItems.map((item, index) => (
