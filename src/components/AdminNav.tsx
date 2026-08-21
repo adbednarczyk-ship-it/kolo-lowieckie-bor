@@ -7,6 +7,7 @@ const links = [
   { href: "/admin/galeria", label: "Galeria" },
   { href: "/admin/aktualnosci", label: "Aktualności" },
   { href: "/admin/uzytkownicy", label: "Użytkownicy" },
+  { href: "/admin/wydarzenia", label: "Zbiórki" },
   { href: "/szkody", label: "Szkody" },
 ] as const;
 

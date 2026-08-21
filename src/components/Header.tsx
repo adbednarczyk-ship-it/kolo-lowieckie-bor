@@ -31,6 +31,7 @@ function memberLinks(role?: UserRole | null): NavLink[] {
   ];
   if (role === "admin" || role === "board") {
     items.splice(2, 0, { href: "/szkody", label: "Szkody" });
+    items.splice(2, 0, { href: "/admin/wydarzenia", label: "Zbiórki" });
   }
   if (role === "admin") {
     items.push({ href: "/admin", label: "Panel" });

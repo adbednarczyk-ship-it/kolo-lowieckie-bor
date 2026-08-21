@@ -35,6 +35,11 @@ const cards = [
     text: "Konta członków i role.",
   },
   {
+    href: "/admin/wydarzenia",
+    title: "Zbiórki i polowania",
+    text: "Terminy, limity miejsc i zapisy.",
+  },
+  {
     href: "/szkody",
     title: "Szkody łowieckie",
     text: "Zgłoszenia od rolników: status, szacujący, notatki.",
