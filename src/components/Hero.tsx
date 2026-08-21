@@ -8,7 +8,7 @@ import { type SiteSettings } from "@/types/cms";
 export function Hero({ settings }: { settings: SiteSettings }) {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 700], [0, 180]);
-  const opacity = useTransform(scrollY, [0, 500], [1, 0.35]);
+  const opacity = useTransform(scrollY, [0, 500], [1, 0.88]);
 
   return (
     <section className="relative isolate flex min-h-[100svh] items-end overflow-hidden">
@@ -30,8 +30,9 @@ export function Hero({ settings }: { settings: SiteSettings }) {
         </motion.div>
       </motion.div>
 
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-charcoal via-charcoal/55 to-charcoal/25" />
-      <div className="noise pointer-events-none absolute inset-0 -z-10 opacity-[0.12] mix-blend-overlay" />
+      <div className="absolute inset-0 -z-10 bg-charcoal/50" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-charcoal via-charcoal/75 to-charcoal/45" />
+      <div className="noise pointer-events-none absolute inset-0 -z-10 opacity-[0.18] mix-blend-overlay" />
 
       <motion.div
         style={{ opacity }}

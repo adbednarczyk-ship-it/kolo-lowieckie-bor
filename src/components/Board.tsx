@@ -7,7 +7,7 @@ export function Board({ members }: { members: BoardMember[] }) {
   return (
     <section
       id="zarzad"
-      className="scroll-mt-24 bg-forest/40 py-24 sm:py-32"
+      className="scroll-mt-24 bg-forest py-24 sm:py-32"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <FadeIn>

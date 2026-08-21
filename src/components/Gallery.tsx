@@ -46,7 +46,7 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
   return (
     <section
       id="galeria"
-      className="scroll-mt-24 bg-charcoal-soft py-24 sm:py-32"
+      className="scroll-mt-24 bg-charcoal py-24 sm:py-32"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <FadeIn>
