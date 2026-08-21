@@ -4,16 +4,45 @@ import { createServiceSupabaseClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { uploadPublicImage } from "@/lib/upload";
 
-export type DamageFormState = { error?: string; success?: string } | undefined;
+export type DamageFormValues = {
+  full_name: string;
+  phone: string;
+  email: string;
+  plot_location: string;
+  description: string;
+  noticed_on: string;
+};
+
+export type DamageFormState = {
+  error?: string;
+  success?: string;
+  values?: DamageFormValues;
+  stamp?: number;
+} | undefined;
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function readValues(formData: FormData): DamageFormValues {
+  return {
+    full_name: String(formData.get("full_name") ?? ""),
+    phone: String(formData.get("phone") ?? ""),
+    email: String(formData.get("email") ?? ""),
+    plot_location: String(formData.get("plot_location") ?? ""),
+    description: String(formData.get("description") ?? ""),
+    noticed_on: String(formData.get("noticed_on") ?? ""),
+  };
+}
+
+function fail(error: string, formData: FormData): DamageFormState {
+  return { error, values: readValues(formData), stamp: Date.now() };
+}
 
 export async function submitDamageReport(
   _prev: DamageFormState,
   formData: FormData,
 ): Promise<DamageFormState> {
   if (!isSupabaseConfigured()) {
-    return { error: "Formularz nie jest jeszcze podłączony. Spróbuj później." };
+    return fail("Formularz nie jest jeszcze podłączony. Spróbuj później.", formData);
   }
 
   const fullName = String(formData.get("full_name") ?? "").trim();
@@ -23,12 +52,14 @@ export async function submitDamageReport(
   const description = String(formData.get("description") ?? "").trim();
   const noticedOn = String(formData.get("noticed_on") ?? "").trim();
 
-  if (fullName.length < 2) return { error: "Podaj imię i nazwisko." };
-  if (!phone) return { error: "Podaj telefon." };
-  if (!emailPattern.test(email)) return { error: "Podaj poprawny e-mail." };
-  if (plotLocation.length < 3) return { error: "Podaj lokalizację działki." };
-  if (description.length < 10) return { error: "Opisz szkodę trochę dokładniej." };
-  if (!noticedOn) return { error: "Podaj datę zauważenia szkody." };
+  if (fullName.length < 2) return fail("Podaj imię i nazwisko.", formData);
+  if (!phone) return fail("Podaj telefon.", formData);
+  if (!emailPattern.test(email)) return fail("Podaj poprawny e-mail.", formData);
+  if (plotLocation.length < 3) return fail("Podaj lokalizację działki.", formData);
+  if (description.length < 10) {
+    return fail("Opisz szkodę trochę dokładniej.", formData);
+  }
+  if (!noticedOn) return fail("Podaj datę zauważenia szkody.", formData);
 
   try {
     const admin = createServiceSupabaseClient();
@@ -47,7 +78,7 @@ export async function submitDamageReport(
       .single();
 
     if (error || !report) {
-      return { error: error?.message ?? "Nie udało się wysłać zgłoszenia." };
+      return fail(error?.message ?? "Nie udało się wysłać zgłoszenia.", formData);
     }
 
     const files = formData
@@ -72,8 +103,9 @@ export async function submitDamageReport(
         "Zgłoszenie zostało przyjęte. Skontaktujemy się w sprawie oględzin.",
     };
   } catch (error) {
-    return {
-      error: error instanceof Error ? error.message : "Nie udało się wysłać zgłoszenia.",
-    };
+    return fail(
+      error instanceof Error ? error.message : "Nie udało się wysłać zgłoszenia.",
+      formData,
+    );
   }
 }

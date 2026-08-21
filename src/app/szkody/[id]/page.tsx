@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { updateDamageReport } from "../actions";
+import { UpdateForm } from "./UpdateForm";
 import { formatDate } from "@/lib/site";
 import { requireStaff } from "@/lib/supabase/profile";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { type Profile } from "@/types/auth";
 import {
   damageStatusLabels,
-  damageStatuses,
   type DamagePhoto,
   type DamageReport,
 } from "@/types/damages";
@@ -89,53 +88,13 @@ export default async function DamageDetailPage({ params }: PageProps) {
           <p className="mt-8 text-sm text-cream-muted">Brak zdjęć.</p>
         )}
 
-        <form action={updateDamageReport} className="mt-12 space-y-5 border border-cream/10 p-6">
-          <input type="hidden" name="id" value={details.id} />
-          <label className="block text-sm">
-            <span className="mb-2 block text-cream-muted">Status</span>
-            <select
-              name="status"
-              defaultValue={details.status}
-              className="w-full border border-cream/15 bg-charcoal px-4 py-3 text-cream outline-none focus:border-gold"
-            >
-              {damageStatuses.map((status) => (
-                <option key={status} value={status}>
-                  {damageStatusLabels[status]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block text-sm">
-            <span className="mb-2 block text-cream-muted">Osoba szacująca</span>
-            <select
-              name="assignee_id"
-              defaultValue={details.assignee_id ?? ""}
-              className="w-full border border-cream/15 bg-charcoal px-4 py-3 text-cream outline-none focus:border-gold"
-            >
-              <option value="">Nieprzypisana</option>
-              {estimators.map((person) => (
-                <option key={person.id} value={person.id}>
-                  {person.full_name || person.email}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block text-sm">
-            <span className="mb-2 block text-cream-muted">Notatki wewnętrzne</span>
-            <textarea
-              name="internal_notes"
-              rows={5}
-              defaultValue={details.internal_notes}
-              className="w-full border border-cream/15 bg-transparent px-4 py-3 text-cream outline-none focus:border-gold"
-            />
-          </label>
-          <button
-            type="submit"
-            className="rounded-full bg-gold px-8 py-3 text-sm tracking-[0.16em] text-charcoal uppercase"
-          >
-            Zapisz
-          </button>
-        </form>
+        <UpdateForm
+          reportId={details.id}
+          status={details.status}
+          assigneeId={details.assignee_id}
+          notes={details.internal_notes}
+          estimators={estimators}
+        />
       </div>
     </main>
   );

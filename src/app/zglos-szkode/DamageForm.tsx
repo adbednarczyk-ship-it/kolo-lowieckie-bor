@@ -12,20 +12,45 @@ export function DamageForm() {
     undefined,
   );
 
+  const values = state?.values;
+
   return (
-    <form action={action} className="border border-cream/10 bg-charcoal/40 p-6 sm:p-8">
+    <form
+      key={state?.stamp ?? "nowy"}
+      action={action}
+      className="border border-cream/10 bg-charcoal/40 p-6 sm:p-8"
+    >
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="block text-sm">
           <span className="mb-2 block text-cream-muted">Imię i nazwisko</span>
-          <input required name="full_name" autoComplete="name" className={field} />
+          <input
+            required
+            name="full_name"
+            autoComplete="name"
+            defaultValue={values?.full_name}
+            className={field}
+          />
         </label>
         <label className="block text-sm">
           <span className="mb-2 block text-cream-muted">Telefon</span>
-          <input required name="phone" autoComplete="tel" className={field} />
+          <input
+            required
+            name="phone"
+            autoComplete="tel"
+            defaultValue={values?.phone}
+            className={field}
+          />
         </label>
         <label className="block text-sm sm:col-span-2">
           <span className="mb-2 block text-cream-muted">E-mail</span>
-          <input required type="email" name="email" autoComplete="email" className={field} />
+          <input
+            required
+            type="email"
+            name="email"
+            autoComplete="email"
+            defaultValue={values?.email}
+            className={field}
+          />
         </label>
         <label className="block text-sm sm:col-span-2">
           <span className="mb-2 block text-cream-muted">Lokalizacja działki</span>
@@ -33,12 +58,19 @@ export function DamageForm() {
             required
             name="plot_location"
             placeholder="Obręb, numer działki, najbliższa miejscowość"
+            defaultValue={values?.plot_location}
             className={field}
           />
         </label>
         <label className="block text-sm">
           <span className="mb-2 block text-cream-muted">Data zauważenia</span>
-          <input required type="date" name="noticed_on" className={field} />
+          <input
+            required
+            type="date"
+            name="noticed_on"
+            defaultValue={values?.noticed_on}
+            className={field}
+          />
         </label>
         <label className="block text-sm">
           <span className="mb-2 block text-cream-muted">Zdjęcia (do 8 plików)</span>
@@ -52,7 +84,13 @@ export function DamageForm() {
         </label>
         <label className="block text-sm sm:col-span-2">
           <span className="mb-2 block text-cream-muted">Opis szkody</span>
-          <textarea required name="description" rows={6} className={field} />
+          <textarea
+            required
+            name="description"
+            rows={6}
+            defaultValue={values?.description}
+            className={field}
+          />
         </label>
       </div>
       <p className="mt-4 text-xs leading-relaxed text-cream-muted">
